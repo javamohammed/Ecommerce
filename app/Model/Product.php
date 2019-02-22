@@ -31,4 +31,8 @@ protected $table = "products";
             'status',
             'reason',
     ];
+
+    function files(){
+        return $this->hasMany('App\File', 'relation_id', 'id')->where('file_type', 'product');
+    }
 }

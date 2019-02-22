@@ -12,8 +12,35 @@
             maxFilessiz: 2,//MB
             acceptedFiles: 'image/*',
             dictDefaultMessage: 'إضغط هنا لرفع الملفات أو قم بسحب الملفات وإطلاقها هنا',
+            dictRemoveFile: '{{trans('admin.delete')}}',
             params: {
                 _token: '{{csrf_token()}}'
+            },
+            addRemoveLinks: true,
+            removedfile: function(file){
+                $.ajax({
+                    dataType: 'json',
+                    method: 'post',
+                    url:  "{{ aurl('delete/image')}}",
+                    data: {_token:'{{csrf_token()}}', id: file.fid}
+                })
+                var fmock;
+                return (fmock = file.previewElement) != null ? fmock.parentNode.removeChild(file.previewElement) : void 0
+            },
+            init: function (){
+               @foreach ($product->files()->get() as $file)
+                    var mock = { name: '{{$file->name}}',fid: '{{$file->id }}', size: '{{$file->size}}', type: '{{$file->mime_type}}' }
+                    this.emit('addedfile',mock)
+                    this.options.thumbnail.call(this,mock, '{{url('storage/'.$file->full_file)}}' )
+                @endforeach
+
+                this.on('sending',function(file, xhr, formdata){
+                    formdata.append('fid', '')
+                    file.id =''
+                })
+                this.on('success', function(file, response){
+                    file.fid = response.id
+                })
             }
         })
     })

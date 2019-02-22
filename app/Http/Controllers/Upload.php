@@ -13,6 +13,15 @@ class Upload extends Controller {
 	'file_type',
 	'relation_id',
 	 */
+    public function delete($id){
+        $file = File::find($id);
+        if(!empty($file)){
+            Storage::delete($file->full_file);
+            $file->delete();
+        }
+    }
+
+
 	public function upload($data = []) {
 		if (in_array('new_name', $data)) {
 			$new_name = $data['new_name'] === null?time():$data['new_name'];
@@ -36,14 +45,15 @@ class Upload extends Controller {
                 'size' => $size,
                 'file' => $hashname,
                 'path' => $data['path'],
-                'full_file' => $data['path'].$hashname,
+                'full_file' => $data['path'].'/'.$hashname,
                 'mime_type' => $mime_type,
                 'file_type' => $data['file_type'],
                 'relation_id' => $data['relation_id'],
             ]);
-             $ValReturned =  $ValReturned.";".$data['path'].$hashname;
+            // $ValReturned =  $ValReturned.";".$data['path'].' / '.$hashname;
+            return $add->id;
             }
-            return $ValReturned;
+            //return $ValReturned;
         }
 	}
 }
