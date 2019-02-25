@@ -35,7 +35,7 @@ class TradeMarksController extends Controller {
 			[
 				'name_ar'     => 'required',
 				'name_en'     => 'required',
-				'logo'     => 'required|'.v_image(),
+				'logo'     => 'sometimes|'.v_image(),
 			], [], [
 				'name_ar'     => trans('admin.name_ar'),
 				'name_en'     => trans('admin.name_en'),

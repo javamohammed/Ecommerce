@@ -1,6 +1,8 @@
 <?php
 namespace App\Http\Controllers\Admin;
 use App\Model\Product;
+use App\Model\Size;
+use App\Model\Weight;
 use App\DataTables\ProductsDatatable;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
@@ -13,6 +15,41 @@ class ProductsController extends Controller {
 	 */
 	public function index(ProductsDatatable $product) {
 		return $product->render('admin.products.index', ['title' => trans('admin.products')]);
+    }
+
+
+    public function load_weight_size(){
+        if(request()->ajax() and request()->has('dep_id')){
+            $dep_list = array_diff( explode(',', get_parent(request('dep_id'))), [request('dep_id')] );
+            $size_1 = Size::where('is_public', 'yes')->whereIn('department_id', $dep_list)->pluck('name_'.session('lang'),'id');
+            $size_2 = Size::where('department_id', request('dep_id'))->pluck('name_'.session('lang'),'id');
+            $sizes = array_merge(json_decode( $size_1, true), json_decode($size_2, true));
+
+            $weights = Weight::pluck('name_'.session('lang'),'id');
+            return view( 'admin.products.ajax.size_weight',compact( 'sizes', 'weights'))->render();
+        }else{
+            return 'الرجاء ختيار قسم';
+        }
+
+    }
+    public function update_product_image($id){
+        $product = Product::where('id', $id)->update([
+            'photo' =>  up()->upload([
+                'file'        => 'file',
+                'path'        => 'products/'.$id,
+                'upload_type' => 'single',
+                'delete_file' => '',
+            ])
+        ]);
+            return response(['status'=> true/*,  'photo'=> $product->photo*/],  200);
+    }
+    public function delete_main_image($id){
+        $product = Product::find($id);
+        Storage::delete($product->photo);
+        $product->photo = null;
+        $product->save();
+        return response(['status' => true ],  200);
+
     }
 
     public function upload_file($pid){

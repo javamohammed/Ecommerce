@@ -7,6 +7,7 @@
         $('#dropzonefileupload').dropzone({
             url: " {{ aurl('upload/image/'.$product->id) }}",
             paraName: 'files[]',
+            autoDiscover:false,
             uploadMultiple:true,
             maxFiles: 15,
             maxFilessiz: 2,//MB
@@ -43,15 +44,65 @@
                 })
             }
         })
+        //-----------------
+         $('#mainphoto').dropzone({
+            url: " {{ aurl('update/image/'.$product->id) }}",
+            paraName: 'file',
+            autoDiscover:false,
+            uploadMultiple:false,
+            maxFiles: 1,
+            maxFilessiz: 2,//MB
+            acceptedFiles: 'image/*',
+            dictDefaultMessage: '{{trans("admin.mainphoto")}}',
+            dictRemoveFile: '{{trans('admin.delete')}}',
+            params: {
+                _token: '{{csrf_token()}}'
+            },
+            addRemoveLinks: true,
+            removedfile: function(file){
+                $.ajax({
+                    dataType: 'json',
+                    method: 'post',
+                    url:  "{{ aurl('delete/product/image/'.$product->id)}}",
+                    data: {_token:'{{csrf_token()}}'}
+                })
+                var fmock;
+                return (fmock = file.previewElement) != null ? fmock.parentNode.removeChild(file.previewElement) : void 0
+            },
+            init: function (){
+
+                @if (!empty($product->photo))
+                    var mock = { name: '{{$product->title}}', size: '', type: '' }
+                    this.emit('addedfile',mock)
+                    this.options.thumbnail.call(this,mock, '{{ url('storage/'.$product->photo) }}' )
+                    $('.dz-progress').remove()
+                @endif
+                this.on('sending',function(file, xhr, formdata){
+                    formdata.append('fid', '')
+                    file.id =''
+                })
+                this.on('success', function(file, response){
+                    file.fid = response.id
+                })
+            }
+        })
     })
 
     </script>
+    <style type="text/css">
+    .dz-image {
+        width: 100px;
+        height: 100px;
+    }
+    </style>
 @endpush
     <div id="product_media" class="tab-pane fade">
-      <h3>{{trans('admin.product_media')}}
-
-    </h3>
-      <div class="dropzone" id="dropzonefileupload">
-
-      </div>
+      <h3>{{trans('admin.product_media')}}</h3>
+      <hr/>
+      <center><h3>{{ trans('admin.mainphoto')}}</h3></center>
+      <div class="dropzone" id="mainphoto"></div>
+      <hr/>
+      <center><h3>{{ trans('admin.other_files')}}</h3></center>
+      <div class="dropzone" id="dropzonefileupload"></div>
     </div>
+
