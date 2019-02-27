@@ -207,6 +207,8 @@
 <!-- jQuery UI 1.11.4 -->
 <script src="{{ url('/design/adminlte/bower_components/jquery/dist/jquery.min.js') }}"></script>
 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.6-rc.0/js/select2.min.js"></script>
+
 <script src="{{ url('/design/adminlte/bower_components/jquery-ui/jquery-ui.min.js') }}"></script>
 
 <link rel="stylesheet" href="{{ url('design/adminlte') }}/bower_components/datatables.net-bs/css/dataTables.bootstrap.min.css">

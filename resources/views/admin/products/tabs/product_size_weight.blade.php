@@ -1,4 +1,27 @@
 
+@push('js')
+<script type="text/javascript">
+    $(document).ready(function() {
+        var dataSelect = [
+            @foreach (App\Model\Country::all() as $country)
+                {
+                    "text" : "{{ $country->{'country_name_'.lang()} }}",
+                    "children" : [
+                        @foreach ($country->malls()->get() as $mall)
+                            {
+                                "id" : "{{ $mall->id}}",
+                                "text" :  "{{ $mall->{'name_'.lang()} }}",
+                                "selected" : "{{check_mall($mall->id, $product->id)}}"
+                            },
+                        @endforeach
+                    ],
+                },
+            @endforeach
+        ]
+    $('.mall_select2').select2({data:dataSelect});
+    });
+</script>
+@endpush
     <div id="product_size_weight" class="tab-pane fade">
       <h3>{{trans('admin.product_size_weight')}}</h3>
 
@@ -18,6 +41,14 @@
             <div class="form-group col-md-4 col-lg-4 col-sm-4 col-sx-12">
                 {!! Form::label('manu_id',trans('admin.manu_id')) !!}
                 {!! Form::select('manu_id',App\Model\Manufacturers::pluck('name_'.lang(),'id'),$product->manu_id,['class'=>'form-control', 'placeholder' =>trans('admin.manu_id') ]) !!}
+            </div>
+
+            <div  class="col-md-12 col-lg-12 col-sm-12" >
+                {!! Form::label('malls',trans('admin.malls')) !!}
+                <select class="form-control mall_select2" name="mall[]" style="width: 100%"  multiple="multiple">
+                </select>
+
+
             </div>
             <div class="clearfix"></div>
        </div>

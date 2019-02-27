@@ -33,13 +33,16 @@ $(document).ready(function(){
         url: "{{ aurl('load/weight/size') }}",
         dataType: 'html',
         type: 'post',
-        data: {_token:'{{ csrf_token() }}', dep_id:department},
+        data: {_token:'{{ csrf_token() }}', dep_id:department, product_id: "{{$product->id }}"},
         success: function(data){
             $('.size_weight').html(data)
+            //console.log(data)
             $('.other_data').removeClass('hidden')
         }
     })
 });
+
+
 
 </script>
 @endpush
